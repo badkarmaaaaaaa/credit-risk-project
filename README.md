@@ -1,12 +1,12 @@
 # Credit Risk Classification
 
-Binary classification on the German Credit Risk dataset — predicting whether a loan applicant is a good or bad credit risk.
+Predicting if a loan applicant is a good or bad credit risk using the German Credit dataset. Full pipeline — data cleaning, EDA, model training and evaluation.
 
 ---
 
 ## Objective
 
-The core question is simple: given a loan applicant's financial profile, can we predict whether they'll default? Getting this wrong in the wrong direction (approving a bad applicant) costs the bank money, so the model needs to be evaluated with that asymmetry in mind.
+Given a bank applicant's financial info, can we predict if they will default on a loan? The tricky part is that approving a bad applicant costs more than rejecting a good one, so the model has to be evaluated with that in mind.
 
 ---
 
@@ -14,11 +14,11 @@ The core question is simple: given a loan applicant's financial profile, can we 
 
 - **Source:** [UCI Machine Learning Repository – Statlog (German Credit Data)](https://archive.ics.uci.edu/ml/datasets/statlog+(german+credit+data))
 - **Records:** 1,000 applicants
-- **Features:** 20 (mix of numerical and categorical — account status, loan duration, credit history, employment, etc.)
-- **Target:** `1` = Good credit risk, `2` = Bad credit risk (re-mapped to `0` and `1` respectively)
+- **Features:** 20 — account status, loan duration, credit history, employment, age, etc.
+- **Target:** Good risk = 0, Bad risk = 1
 - **Class split:** 70% good, 30% bad
 
-> The dataset is not included in this repo. Download `german.data` from the UCI link above and place it in the `data/` folder.
+> Dataset not included. Download `german.data` from the UCI link and put it in `data/`.
 
 ---
 
@@ -26,13 +26,14 @@ The core question is simple: given a loan applicant's financial profile, can we 
 
 ```
 credit-risk-project/
-├── data/                   # Raw dataset (not tracked by git)
+├── data/                   # dataset goes here (not tracked)
+├── assets/                 # plots for README
 ├── notebooks/
-│   └── eda.ipynb           # Exploratory data analysis
+│   └── eda.ipynb
 ├── src/
-│   ├── preprocess.py       # Data loading and feature engineering
-│   ├── train.py            # Model training (Logistic Regression + Random Forest)
-│   └── evaluate.py         # Evaluation metrics and plots
+│   ├── preprocess.py
+│   ├── train.py
+│   └── evaluate.py
 ├── README.md
 └── requirements.txt
 ```
@@ -41,11 +42,11 @@ credit-risk-project/
 
 ## Methodology
 
-1. **Preprocessing** — one-hot encode categoricals, scale numericals, stratified train/test split, `class_weight='balanced'` to handle the 70/30 imbalance
-2. **EDA** — class distribution, feature distributions by target, correlation with credit risk
-3. **Logistic Regression** — baseline, easy to interpret
-4. **Random Forest** — step up in performance, also gives feature importances
-5. **Evaluation** — ROC AUC, precision, recall, F1, confusion matrix
+1. One-hot encode categoricals, scale numericals, stratified 80/20 split
+2. Used `class_weight='balanced'` to deal with the class imbalance — simpler than oversampling
+3. Trained **Logistic Regression** as baseline (easy to interpret, good for regulated environments)
+4. Trained **Random Forest** as second model (better performance, gives feature importances)
+5. Evaluated both with ROC AUC, precision, recall, F1 and confusion matrix
 
 ---
 
@@ -56,37 +57,49 @@ credit-risk-project/
 | Logistic Regression | ~0.77   | ~0.62           | ~0.68        | ~0.65    |
 | Random Forest       | ~0.80   | ~0.65           | ~0.65        | ~0.65    |
 
-*Results will vary slightly depending on random seed and train/test split.*
+### ROC Curves
+
+![ROC Curves](assets/roc_curves.png)
+
+### Confusion Matrices
+
+![Confusion Matrices](assets/confusion_matrices.png)
+
+### Feature Importance (Random Forest)
+
+![Feature Importance](assets/feature_importance.png)
 
 ---
 
 ## Business Interpretation
 
-The metric that matters most here is **recall on the bad class** — missing a bad applicant means approving a loan that defaults. Random Forest gets a slightly better AUC, but Logistic Regression is easier to explain to a compliance team and its coefficients map directly to applicant features. In a real setting you'd probably also tune the decision threshold below 0.5 to catch more bad applicants, accepting more false positives in exchange.
+The most important metric here is **recall on the bad class**. Missing a bad applicant means approving a loan that will probably default, which costs the bank money. Random Forest has better AUC but Logistic Regression is easier to explain — you can directly look at the coefficients and understand which features are pushing the risk up or down. In a real banking setting that matters a lot for compliance.
+
+One thing I would improve is tuning the decision threshold. Right now both models use 0.5 by default, but lowering that would catch more bad applicants at the cost of rejecting some good ones — which is usually the right trade-off for credit risk.
 
 ---
 
 ## How to Run
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
 
-# Preprocess + train + evaluate
-python src/train.py
-python src/evaluate.py
+# run from inside src/
+cd src
+python train.py
+python evaluate.py
 ```
 
 ---
 
 ## Next Steps
 
-- Tune the decision threshold using a cost matrix (FN is more expensive than FP in this context)
-- Try XGBoost and compare against the Random Forest
+- Tune the decision threshold with a cost matrix
+- Try XGBoost and see if it improves recall
 - Add SHAP values to explain individual predictions
 
 ---
 
 ## Stack
 
-Python 3.10+, scikit-learn, pandas, matplotlib, seaborn
+Python · scikit-learn · pandas · matplotlib · seaborn

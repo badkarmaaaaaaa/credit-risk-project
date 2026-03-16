@@ -12,6 +12,7 @@ from preprocess import load_data, preprocess
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "german.data")
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
+ASSETS_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
 
 
 def load_model(name: str):
@@ -54,8 +55,8 @@ def plot_roc_curves(y_test, models: dict):
     plt.legend(loc="lower right")
     plt.tight_layout()
     plt.savefig(os.path.join(MODELS_DIR, "roc_curves.png"), dpi=150)
+    plt.savefig(os.path.join(ASSETS_DIR, "roc_curves.png"), dpi=150)
     plt.show()
-    print("Saved: models/roc_curves.png")
 
 
 def plot_feature_importance(rf_model, feature_names: list, top_n: int = 15):
@@ -72,8 +73,8 @@ def plot_feature_importance(rf_model, feature_names: list, top_n: int = 15):
     plt.title(f"Top {top_n} Features – Random Forest", fontsize=13, fontweight="bold")
     plt.tight_layout()
     plt.savefig(os.path.join(MODELS_DIR, "feature_importance.png"), dpi=150)
+    plt.savefig(os.path.join(ASSETS_DIR, "feature_importance.png"), dpi=150)
     plt.show()
-    print("Saved: models/feature_importance.png")
 
 
 if __name__ == "__main__":
@@ -97,8 +98,8 @@ if __name__ == "__main__":
     plot_confusion_matrix(axes[1], y_test, rf_pred, "Random Forest")
     plt.tight_layout()
     plt.savefig(os.path.join(MODELS_DIR, "confusion_matrices.png"), dpi=150)
+    plt.savefig(os.path.join(ASSETS_DIR, "confusion_matrices.png"), dpi=150)
     plt.show()
-    print("Saved: models/confusion_matrices.png")
 
     plot_roc_curves(y_test, {
         "Logistic Regression": (lr_prob, "royalblue"),
