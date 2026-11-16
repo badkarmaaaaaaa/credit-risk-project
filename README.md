@@ -73,7 +73,7 @@ credit-risk-project/
 
 ## Interpretation
 
-The most important metric here is **recall on the bad class**. Missing a bad applicant means approving a loan that will probably default, which costs the bank money. Random Forest has better AUC but Logistic Regression is easier to explain becuae you can directly look at the coefficients and understand which features are pushing the risk up or down. In a real banking setting that matters a lot for compliance.
+The most important metric here is **recall on the bad class**. Missing a bad applicant means approving a loan that will probably default, which costs the bank money. Random Forest has better AUC but Logistic Regression is easier to explain because you can directly look at the coefficients and understand which features are pushing the risk up or down. In a real banking setting that matters a lot for compliance.
 
 One thing I would improve is tuning the decision threshold. Right now both models use 0.5 by default, but lowering that would catch more bad applicants at the cost of rejecting some good ones which is usually the right trade-off for credit risk.
 
